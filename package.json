@@ -1,6 +1,6 @@
 {
   "name": "angularjs-currency-input-mask",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AngularJS Multiple pattern currency input mask",
   "main": "index.js",
   "scripts": {
