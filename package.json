@@ -1,0 +1,35 @@
+{
+  "name": "angularjs-currency-input-mask",
+  "version": "1.0.0",
+  "description": "AngularJS Multiple pattern currency input mask",
+  "main": "index.js",
+  "scripts": {
+    "build": "gulp build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "input",
+    "mask",
+    "currency",
+    "angularjs"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iangoop/angularjs-currency-input-mask.git"
+  },
+  "author": "iangoop@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/iangoop/angularjs-currency-input-mask/issues"
+  },
+  "homepage": "https://github.com/iangoop/angularjs-currency-input-mask#readme",
+  "devDependencies": {
+    "angular": "^1.8.0",
+    "gulp": "^4.0.2",
+    "gulp-header": "^2.0.9",
+    "gulp-plumber": "^1.2.1",
+    "gulp-rename": "^2.0.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.2"
+  }
+}

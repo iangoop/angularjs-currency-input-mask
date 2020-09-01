@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AngularJS Currency Mask Demo</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+    <script src="../dist/angularjs-currency-input-mask.min.js"></script>
+    <script>
+        (function() {
+            var currencies = [
+                {symbol:'$',name:'Dollar',config:{indentation:' '}},
+                {symbol:'€', name:'Euro'},
+                {symbol:'£', name: 'Pound',config:{indentation:' '}},
+                {symbol:'¥', name:'Yen', config:{decimalSize:0}},
+                {symbol:'p.', name:'R. Rouble',config:{orientation:'r',indentation:' '}},
+                {symbol:'R$', name:'B. Real',config:{group:'.',decimal:',',indentation:' '}}
+            ]
+            angular.module('demo',['in.$mask'])
+                .controller('ctrl', function($scope,$locale) {
+                    $scope.currencies = currencies;
+                    $scope.currency = currencies[0];
+                    $scope.config3Decimal = {decimalSize:3};
+                    $scope.config0Decimal = {decimalSize:0}
+                })
+        })();
+    </script>
+</head>
+<body ng-app="demo">
+    <h2>AngularJS Multiple pattern currency mask - Demo</h2>
+    <form name="demo" ng-controller="ctrl">
+        <h3>Fixed currency</h3>
+        <input type="text" name="price1" ng-model="price" mask-currency="'$'"  />
+        <h3>Setting indentation</h3>
+        <input type="text" name="price2" ng-model="price2" mask-currency="'$'" config="{indentation:' '}"  />
+        <h3>Change decimal</h3>
+        <p>
+            <b>3 decimal: </b>
+            <input type="text" name="price3" ng-model="price3" mask-currency config="config3Decimal" />
+        </p>
+        <p>Model value: {{price3}}</p>
+        <p>Filter: {{price3 | printCurrency:'':config3Decimal}}</p>
+        <p>
+            <b>0 decimal: </b>
+            <input type="text" name="price4" ng-model="price4" mask-currency config="config0Decimal" />
+        </p>
+        <p>Model value: {{price4}}</p>
+        <p>Filter: {{price4 | printCurrency:'':config0Decimal}}</p>
+        <h3>Dynamic currency and settings</h3>
+        <select ng-model="currency" ng-options="cur.name for cur in currencies"></select>
+        <input type="text" name="price5" ng-model="price5" mask-currency="currency.symbol" config="currency.config" />
+        <p>Model value: {{price5}}</p>
+        <p>Filter: {{price5 | printCurrency : currency.symbol : currency.config}}</p>
+    </form>
+</body>
+</html>
