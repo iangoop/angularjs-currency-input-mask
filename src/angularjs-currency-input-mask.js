@@ -1,7 +1,7 @@
 
 (function(angular) {
     "use strict";
-    angular.module('in.$mask',[])
+    angular.module('cur.$mask',[])
         .factory('support',support())
         .directive('maskCurrency',maskCurrency())
         .filter('printCurrency', printCurrency())
@@ -48,7 +48,8 @@
                 return this;
             },
             group: function() {
-                var regex = RegExp('(\\d)(?=(\\d{'+config.groupSize+'})+'+escape(config.decimal)+')','g'),
+                var limit = config.decimalSize>0?escape(config.decimal):'$',
+                    regex = RegExp('(\\d)(?=(\\d{'+config.groupSize+'})+'+limit+')','g'),
                     replace = "$1"+config.group;
                 this._value = this._value.replace(regex, replace)
                 return this;
@@ -95,54 +96,8 @@
         return (+(Math.round(num + ("e+" + decimalSize))  + ("e-" + decimalSize))).toFixed(decimalSize);
     }
 
-    function getCaretPosition(input) {
-        // IE < 9 Support
-        if (document.selection) {
-            input.focus();
-            var range = document.selection.createRange();
-            var rangelen = range.text.length;
-            range.moveStart('character', -input.value.length);
-            var start = range.text.length - rangelen;
-            return {
-                'start': start,
-                'end': start + rangelen
-            };
-        } // IE >=9 and other browsers
-        else if (input.selectionStart || input.selectionStart == '0') {
-            return {
-                'start': input.selectionStart,
-                'end': input.selectionEnd
-            };
-        } else {
-            return {
-                'start': 0,
-                'end': 0
-            };
-        }
-    }
-
-    function setCaretPosition(input, pos) {
-        if (input.setSelectionRange) {
-            input.focus();
-            input.setSelectionRange(pos, pos);
-            return true;
-        } else if (input.createTextRange) {
-            var range = input.createTextRange();
-            range.collapse(true);
-            range.moveEnd('character', pos);
-            range.moveStart('character', pos);
-            range.select();
-            return true;
-        }
-        return false;
-    }
-
-    function canMoveCaret(input) {
-        return input.setSelectionRange || input.createTextRange;
-    }
-
     function support() {
-        return ['$locale',function($locale) {
+        return ['$locale','$q','$timeout',function($locale,$q,$timeout) {
             return {
                 config: function(param) {
                     var config = param || {},
@@ -158,6 +113,59 @@
                             groupSize: currencyDefault.gSize || 3
                         }
                     return angular.extend({}, defaults, config);
+                },
+                getCaretPosition: function(input) {
+                    return $q(function(resolve,reject) {
+                        // timeout being used as compatibility to older angularjs versions,
+                        // otherwise the internal angular $digest process will fail
+                        $timeout(function() {
+                            // IE < 9 Support
+                            if (document.selection) {
+                                input.focus();
+                                var range = document.selection.createRange();
+                                var rangelen = range.text.length;
+                                range.moveStart('character', -input.value.length);
+                                var start = range.text.length - rangelen;
+                                resolve({
+                                    'start': start,
+                                    'end': start + rangelen
+                                });
+                            } // IE >=9 and other browsers
+                            else if (input.selectionStart || input.selectionStart == '0') {
+                                resolve({
+                                    'start': input.selectionStart,
+                                    'end': input.selectionEnd
+                                });
+                            } else {
+                                resolve({
+                                    'start': 0,
+                                    'end': 0
+                                });
+                            }
+                        })
+                    })
+                },
+                setCaretPosition: function(input, pos) {
+                    return $q(function(resolve, reject) {
+                        $timeout(function() {
+                            if (input.setSelectionRange) {
+                                input.focus();
+                                input.setSelectionRange(pos, pos);
+                                resolve(true);
+                            } else if (input.createTextRange) {
+                                var range = input.createTextRange();
+                                range.collapse(true);
+                                range.moveEnd('character', pos);
+                                range.moveStart('character', pos);
+                                range.select();
+                                resolve(true);
+                            }
+                            reject(false)
+                        })
+                    })
+                },
+                canMoveCaret: function(input) {
+                    return input.setSelectionRange || input.createTextRange;
                 }
             }
         }]
@@ -174,7 +182,7 @@
                 link: function (scope, elem, attrs, ctrl) {
                     if (!ctrl) return;
                     var last,
-                        config;
+                        config = support.config(scope.config);
 
                     function view(value,currency) {
                         return mask(config).format(value,currency);
@@ -207,10 +215,12 @@
                                 ctrl.$render();
                                 if (config.orientation == 'r') {
                                     var index = value.indexOf(mask(config).getRightOrientedCurrency(scope.currency));
-                                    var caret = getCaretPosition(elem[0]);
-                                    if (caret.start == caret.end && caret.start > index) {
-                                        setCaretPosition(elem[0],index)
-                                    }
+                                    support.getCaretPosition(elem[0]).then(function(caret) {
+                                        if (caret.start == caret.end && caret.start > index) {
+                                            support.setCaretPosition(elem[0],index)
+                                        }
+                                    })
+
                                 }
                             }
                         }
@@ -224,7 +234,7 @@
                     scope.$watch('config', function(value) {
                         config = support.config(value);
                         //if browser doesn't support the caret move, force orientation to left
-                        if (!canMoveCaret(elem[0])) {
+                        if (!support.canMoveCaret(elem[0])) {
                             config.orientation = 'l';
                         }
                         if (ctrl.$viewValue) {

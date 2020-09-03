@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>AngularJS Currency Mask Demo</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
-    <script src="../dist/angularjs-currency-input-mask.min.js"></script>
+    <script src="https://code.angularjs.org/1.8.0/angular.min.js"></script>
+    <script src="../dist/angularjs-currency-input-mask.js"></script>
     <script>
         (function() {
             var currencies = [
@@ -15,7 +15,7 @@
                 {symbol:'p.', name:'R. Rouble',config:{orientation:'r',indentation:' '}},
                 {symbol:'R$', name:'B. Real',config:{group:'.',decimal:',',indentation:' '}}
             ]
-            angular.module('demo',['in.$mask'])
+            angular.module('demo',['cur.$mask'])
                 .controller('ctrl', function($scope,$locale) {
                     $scope.currencies = currencies;
                     $scope.currency = currencies[0];
