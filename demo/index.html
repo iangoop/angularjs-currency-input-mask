@@ -8,12 +8,12 @@
     <script>
         (function() {
             var currencies = [
-                {symbol:'$',name:'Dollar',config:{indentation:' '}},
-                {symbol:'€', name:'Euro'},
-                {symbol:'£', name: 'Pound',config:{indentation:' '}},
-                {symbol:'¥', name:'Yen', config:{decimalSize:0}},
+                {symbol:'\u0024',name:'Dollar',config:{indentation:' '}},
+                {symbol:'\u20AC', name:'Euro'},
+                {symbol:'\u00A3', name: 'Pound',config:{indentation:' '}},
+                {symbol:'\u00A5', name:'Yen', config:{decimalSize:0}},
                 {symbol:'p.', name:'R. Rouble',config:{orientation:'r',indentation:' '}},
-                {symbol:'R$', name:'B. Real',config:{group:'.',decimal:',',indentation:' '}}
+                {symbol:'R\u0024', name:'B. Real',config:{group:'.',decimal:',',indentation:' '}}
             ]
             angular.module('demo',['cur.$mask'])
                 .controller('ctrl', function($scope,$locale) {

@@ -106,13 +106,15 @@
                         defaults = {
                             indentation: '',
                             orientation:'l',
-                            symbol: paramDefault.CURRENCY_SYM || '$',
                             decimal: paramDefault.DECIMAL_SEP || '.',
                             group: paramDefault.GROUP_SEP || ',',
                             decimalSize: currencyDefault.minFrac || 2,
                             groupSize: currencyDefault.gSize || 3
                         }
                     return angular.extend({}, defaults, config);
+                },
+                currency: function(symbol) {
+                    return symbol != undefined ? symbol : $locale.NUMBER_FORMATS.CURRENCY_SYM || '$'
                 },
                 getCaretPosition: function(input) {
                     return $q(function(resolve,reject) {
@@ -197,10 +199,10 @@
                         return value;
                     }
 
-                    function parser(inputValue) {
+                    function parser(inputValue,currency) {
                         var modelValue = null;
                         if (inputValue) {
-                            var value = view(inputValue,scope.currency);
+                            var value = view(inputValue,currency);
                             modelValue = model(value);
                             if (value == inputValue) {
                                 value = undefined;
@@ -214,7 +216,7 @@
                                 ctrl.$setViewValue(value);
                                 ctrl.$render();
                                 if (config.orientation == 'r') {
-                                    var index = value.indexOf(mask(config).getRightOrientedCurrency(scope.currency));
+                                    var index = value.indexOf(mask(config).getRightOrientedCurrency(currency));
                                     support.getCaretPosition(elem[0]).then(function(caret) {
                                         if (caret.start == caret.end && caret.start > index) {
                                             support.setCaretPosition(elem[0],index)
@@ -228,7 +230,7 @@
                     }
 
                     scope.$watch('currency',function() {
-                        parser(ctrl.$viewValue);
+                        parser(ctrl.$viewValue, support.currency(scope.currency));
                     })
 
                     scope.$watch('config', function(value) {
@@ -243,11 +245,11 @@
                     })
 
                     ctrl.$parsers.push(function(inputValue) {
-                        return parser(inputValue);
+                        return parser(inputValue, support.currency(scope.currency));
                     })
 
                     ctrl.$formatters.push(function(value) {
-                        return value?view(round(value,config.decimalSize), scope.currency) : null;
+                        return value?view(round(value,config.decimalSize), support.currency(scope.currency)) : null;
                     })
                 }
             }
