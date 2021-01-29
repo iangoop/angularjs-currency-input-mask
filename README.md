@@ -4,7 +4,7 @@ Module for AngularJS 1.3+ providing a input mask and filter for working with var
 
 ## Installation
 ```
-npm install --save angular-input-masks
+npm install --save angularjs-currency-input-mask
 ```
 
 ## Configuration
