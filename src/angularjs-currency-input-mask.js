@@ -201,29 +201,29 @@
 
                     function parser(inputValue,currency) {
                         var modelValue = null;
-                        if (inputValue) {
-                            var value = view(inputValue,currency);
-                            modelValue = model(value);
-                            if (value == inputValue) {
-                                value = undefined;
-                            } else if (value == last && value.replace(/[^\d]/g,'') == '000') {
-                                value = '';
-                                modelValue = null;
-                            }
+                        inputValue = inputValue || "0";
 
-                            if (value !== undefined) {
-                                last = value;
-                                ctrl.$setViewValue(value);
-                                ctrl.$render();
-                                if (config.orientation == 'r') {
-                                    var index = value.indexOf(mask(config).getRightOrientedCurrency(currency));
-                                    support.getCaretPosition(elem[0]).then(function(caret) {
-                                        if (caret.start == caret.end && caret.start > index) {
-                                            support.setCaretPosition(elem[0],index)
-                                        }
-                                    })
+                        var value = view(inputValue,currency);
+                        modelValue = model(value);
+                        if (value == inputValue) {
+                            value = undefined;
+                        } else if (value == last && value.replace(/[^\d]/g,'') == '000') {
+                            value = '';
+                            modelValue = null;
+                        }
 
-                                }
+                        if (value !== undefined) {
+                            last = value;
+                            ctrl.$setViewValue(value);
+                            ctrl.$render();
+                            if (config.orientation == 'r') {
+                                var index = value.indexOf(mask(config).getRightOrientedCurrency(currency));
+                                support.getCaretPosition(elem[0]).then(function(caret) {
+                                    if (caret.start == caret.end && caret.start > index) {
+                                        support.setCaretPosition(elem[0],index)
+                                    }
+                                })
+
                             }
                         }
                         return modelValue;
