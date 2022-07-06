@@ -198,7 +198,7 @@
                     function model(value) {
                         value = removeNotNumericCharacters(value);
                         if (config.decimalSize > 0) {
-                            let regex = RegExp('(\\d)(?=\\d{'+config.decimalSize+'}$)','g');
+                            var regex = RegExp('(\\d)(?=\\d{'+config.decimalSize+'}$)','g');
                             value = value.replace(regex, "$1.");
                         }
                         return value;
