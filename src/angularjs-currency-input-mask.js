@@ -6,6 +6,11 @@
         .directive('maskCurrency',maskCurrency())
         .filter('printCurrency', printCurrency())
 
+    function removeNotNumericCharacters(value){
+        //Allow to use negative character on first position of value
+        return value.replace(/[^\d-]/g, '').replace(/(?!^-)-/g, '');
+    }
+
     function mask(config) {
         function pad(value,size) {
             return new Array(size).concat([value]).join('0');
@@ -22,7 +27,7 @@
                 return this;
             },
             clear: function() {
-                this._value = this._value.replace(/[^\d]/g,'')
+                this._value = removeNotNumericCharacters(this._value)
                 return this;
             },
             minimum: function() {
@@ -62,8 +67,8 @@
                     this._value = this._value.replace(regex,replace)
                 } else {
                     var currency = this.getLeftOrientedCurrency(symbol),
-                        regex = RegExp('^(.)','g'),
-                        replace = print(currency)+"$1"
+                        regex = RegExp('(^-?)(.)','g'),
+                        replace = "$1"+print(currency)+"$2"
                     this._value = this._value.replace(regex,replace)
                 }
                 return this;
@@ -191,7 +196,7 @@
                     }
 
                     function model(value) {
-                        value = value.replace(/[^\d]/g,'');
+                        value = removeNotNumericCharacters(value);
                         if (config.decimalSize > 0) {
                             var regex = RegExp('(\\d)(?=\\d{'+config.decimalSize+'}$)','g');
                             value = value.replace(regex, "$1.");
