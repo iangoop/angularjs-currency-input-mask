@@ -128,7 +128,6 @@
                         $timeout(function() {
                             // IE < 9 Support
                             if (document.selection) {
-                                input.focus();
                                 var range = document.selection.createRange();
                                 var rangelen = range.text.length;
                                 range.moveStart('character', -input.value.length);
@@ -156,7 +155,6 @@
                     return $q(function(resolve, reject) {
                         $timeout(function() {
                             if (input.setSelectionRange) {
-                                input.focus();
                                 input.setSelectionRange(pos, pos);
                                 resolve(true);
                             } else if (input.createTextRange) {
@@ -250,10 +248,29 @@
                     })
 
                     ctrl.$parsers.push(function(inputValue) {
+                        var parsedValue = parseFloat(parser(inputValue, scope.currency));
+                        if(parsedValue && attrs.min) {
+                            ctrl.$setValidity('min', parsedValue >= attrs.min);
+                        }
+                        if(parsedValue && attrs.max) {
+                            ctrl.$setValidity('max',  parsedValue <= attrs.max);
+                        }
                         return parser(inputValue, support.currency(scope.currency));
                     })
 
                     ctrl.$formatters.push(function(value) {
+                        var parsedValue = parseFloat(value);
+                        if(value && !parseFloat(value)) {
+                            ctrl.$setValidity('invalid', true);
+                        }
+                        if(parsedValue && attrs.min) {
+                            ctrl.$setValidity('min', parsedValue >= attrs.min);
+                        }
+                        if(parsedValue && attrs.max) {
+                            ctrl.$setValidity('max', parsedValue <= attrs.max);
+                        }
+                        ctrl.$setDirty();
+                        ctrl.$validate();
                         return value?view(round(value,config.decimalSize), support.currency(scope.currency)) : null;
                     })
                 }
