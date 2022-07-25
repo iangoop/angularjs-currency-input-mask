@@ -19,11 +19,18 @@ describe('Formatting numbers',function() {
             expect(element.val()).toEqual('$0.01');
         })
 
-        it('typing negative number with standard config and hard-coded $ should return $0.01',function() {
+        it('typing negative number with standard config and hard-coded $ should return -$12',function() {
             var element = $compile("<input type=\"text\" ng-model=\"currency\" mask-currency=\"'$'\" />")($rootScope);
             $rootScope.$digest();
             element.val('-12').triggerHandler('input');
             expect(element.val()).toEqual('-$12');
+        })
+
+        it('typing negative number with standard config and hard-coded $ should return -$ when user write only - character',function() {
+            var element = $compile("<input type=\"text\" ng-model=\"currency\" mask-currency=\"'$'\" />")($rootScope);
+            $rootScope.$digest();
+            element.val('-').triggerHandler('input');
+            expect(element.val()).toEqual('-$');
         })
 
         it('typing a minus character in the middle of a number with standard config and hard-coded $ should be ignored',function() {

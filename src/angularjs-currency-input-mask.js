@@ -67,7 +67,7 @@
                     this._value = this._value.replace(regex,replace)
                 } else {
                     var currency = this.getLeftOrientedCurrency(symbol),
-                        regex = RegExp('(^-?)(.)','g'),
+                        regex = RegExp('(^-?)(.?)','g'),
                         replace = "$1"+print(currency)+"$2"
                     this._value = this._value.replace(regex,replace)
                 }
